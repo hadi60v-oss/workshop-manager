@@ -1,0 +1,37 @@
+name: Build Workshop Manager APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get project
+        uses: actions/checkout@v4
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.9
+
+      - name: Extract project
+        run: unzip -q workshop_manager_source_v0.8.zip
+
+      - name: Build APK
+        run: gradle -p workshop_manager assembleDebug
+
+      - name: Save APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: workshop-manager-apk
+          path: workshop_manager/app/build/outputs/apk/debug/app-debug.apk
